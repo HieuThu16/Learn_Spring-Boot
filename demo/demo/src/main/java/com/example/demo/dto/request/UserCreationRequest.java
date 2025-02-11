@@ -1,13 +1,21 @@
 package com.example.demo.dto.request;
 
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class UserCreationRequest {
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private LocalDate dob;
+    @Size(min = 4, message = "USERNAME_INVALID")
+    String username;
+
+    @Size(min = 6, message = "INVALID_PASSWORD")
+    String password;
+
+    String firstName;
+    String lastName;
+
+   // @DobConstraint(min = 10, message = "INVALID_DOB")
+    LocalDate dob;
 
     public String getUsername() {
         return username;
