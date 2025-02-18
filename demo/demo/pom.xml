@@ -64,6 +64,13 @@
 			<version>${mapstruct.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.31</version>
+			<!-- Hoặc dùng phiên bản mới hơn nếu cần -->
+		</dependency>
+
 	</dependencies>
 
 	<build>

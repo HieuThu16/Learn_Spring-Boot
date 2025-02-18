@@ -12,7 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.*;
+import com.nimbusds.jwt.*;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,8 +34,29 @@ public class AuthenticationService {
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        return AuthenticationResponse.builder().authenticated(authenticated).build();
+        if(!authenticated)
+            throw new AppException(ErrorCode.UNAUTHENTICATED) ;
+
+       // return AuthenticationResponse.builder().authenticated(authenticated).build();
     }
 
+    private String generateToken(String username){
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+
+        // Tạo Payload với các claims
+        JWTClaimsSet jwtClaimSet = new JWTClaimsSet.Builder()
+                .subject(username)
+                .issuer("hieuthu3")
+                .issueTime(new Date())
+                .expirationTime(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
+                .claim("customClaim", "Custom")
+                .build();
+
+        Payload payload = new Payload(jwtClaimSet.toJSONObject());
+
+        JWSObject jwsObject = new JWSObject(header, payload);
+        jwsObject.sign(new MACSigner()) ;
+
+    }
 
 }
