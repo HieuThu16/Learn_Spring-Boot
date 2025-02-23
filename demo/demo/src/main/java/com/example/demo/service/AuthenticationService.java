@@ -1,13 +1,17 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.request.AuthenticationRequest;
+import com.example.demo.dto.request.IntrospectRequest;
 import com.example.demo.dto.response.AuthenticationResponse;
+import com.example.demo.dto.response.IntrospectResponse;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +20,8 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jwt.*;
 
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -25,6 +31,28 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
+ 
+    protected static final String SIGNER_KEY  = "hx50zP4A+mrpCy/vZEKJOa6wQvJRe2EPFzYM8GNYI88V63xpsUwKsB5EpIyGuIsw" ;
+
+
+    public IntrospectResponse introspect(IntrospectRequest request)
+    throws JOSEException , ParseException {
+        var token = request.getToken();
+
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes()) ;
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier) ;
+
+        return IntrospectResponse.builder()
+                .valid( verified && expiryTime.after(new Date()))
+                .build();
+
+
+    }
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -36,8 +64,10 @@ public class AuthenticationService {
 
         if(!authenticated)
             throw new AppException(ErrorCode.UNAUTHENTICATED) ;
+        var token = generateToken(request.getUsername());
 
-       // return AuthenticationResponse.builder().authenticated(authenticated).build();
+       return AuthenticationResponse.builder().token(token).
+               authenticated(true).build();
     }
 
     private String generateToken(String username){
@@ -55,7 +85,14 @@ public class AuthenticationService {
         Payload payload = new Payload(jwtClaimSet.toJSONObject());
 
         JWSObject jwsObject = new JWSObject(header, payload);
-        jwsObject.sign(new MACSigner()) ;
+        try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY));
+            return jwsObject.serialize();
+        }
+        catch (JOSEException e) {
+            log.error("Can't create token", e );
+            throw new RuntimeException(e);
+        }
 
     }
 
