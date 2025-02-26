@@ -31,7 +31,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
- 
+
     protected static final String SIGNER_KEY  = "hx50zP4A+mrpCy/vZEKJOa6wQvJRe2EPFzYM8GNYI88V63xpsUwKsB5EpIyGuIsw" ;
 
 
