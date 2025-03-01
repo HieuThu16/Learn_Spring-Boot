@@ -4,6 +4,7 @@ import com.example.demo.dto.request.AuthenticationRequest;
 import com.example.demo.dto.request.IntrospectRequest;
 import com.example.demo.dto.response.AuthenticationResponse;
 import com.example.demo.dto.response.IntrospectResponse;
+import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.repository.UserRepository;
@@ -19,12 +20,15 @@ import org.springframework.stereotype.Service;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jwt.*;
+import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -64,22 +68,22 @@ public class AuthenticationService {
 
         if(!authenticated)
             throw new AppException(ErrorCode.UNAUTHENTICATED) ;
-        var token = generateToken(request.getUsername());
+        var token = generateToken(user);
 
        return AuthenticationResponse.builder().token(token).
                authenticated(true).build();
     }
 
-    private String generateToken(String username){
+    private String generateToken(User user){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
 
         // Tạo Payload với các claims
         JWTClaimsSet jwtClaimSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("hieuthu3")
                 .issueTime(new Date())
                 .expirationTime(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
-                .claim("customClaim", "Custom")
+                .claim("scope", buildScope(user))
                 .build();
 
         Payload payload = new Payload(jwtClaimSet.toJSONObject());
@@ -94,6 +98,15 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
 
+    }
+    private String buildScope(User user) {
+        StringJoiner stringJoiner = new StringJoiner(" "); // Dùng khoảng trắng làm delimiter
+
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(stringJoiner::add);
+        }
+
+        return stringJoiner.toString();
     }
 
 }
