@@ -27,44 +27,44 @@ import java.util.List;
 @Slf4j
 public class UserController {
     UserService userService;
-    @PostMapping
-    ApiResponse<User>  createUser(@RequestBody @Valid  UserCreationRequest request){
-        ApiResponse<User> apiResponse= new ApiResponse<>();
-        apiResponse.setResult(userService.createUser(request));
-        return apiResponse;
-    }
-    @GetMapping("/users")
-    public ApiResponse<List<UserResponse>> getUsers() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+//    @PostMapping
+//    ApiResponse<User>  createUser(@RequestBody @Valid  UserCreationRequest request){
+//        ApiResponse<User> apiResponse= new ApiResponse<>();
+//        apiResponse.setResult(userService.createUser(request));
+//        return apiResponse;
+//    }
+//    @GetMapping("/users")
+//    public ApiResponse<List<UserResponse>> getUsers() {
+//        var authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        log.info("Username: {}", authentication.getName());
+//
+//        authentication.getAuthorities().forEach(grantedAuthority ->
+//                log.info(grantedAuthority.getAuthority())
+//        );
+//
+//        return ApiResponse.<List<UserResponse>>builder()
+//                .result(userService.getUsers())
+//                .build();
+//    }
+//    @GetMapping("/{userId}")
+//    UserResponse getUser(@PathVariable("userId") String userId){
+//        return userService.getUser(userId);
+//    }
+//
+//    @GetMapping("/my-info")
+//    ApiResponse<UserResponse> getMyInfo() {
+//        return ApiResponse.<UserResponse>builder()
+//                .result(userService.getMyInfo())
+//                .build();
+//    }
 
-        log.info("Username: {}", authentication.getName());
-
-        authentication.getAuthorities().forEach(grantedAuthority ->
-                log.info(grantedAuthority.getAuthority())
-        );
-
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getUsers())
-                .build();
-    }
-    @GetMapping("/{userId}")
-    UserResponse getUser(@PathVariable("userId") String userId){
-        return userService.getUser(userId);
-    }
-
-    @GetMapping("/my-info")
-    ApiResponse<UserResponse> getMyInfo() {
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.getMyInfo())
-                .build();
-    }
-
-    @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.updateUser(userId, request))
-                .build();
-    }
+//    @PutMapping("/{userId}")
+//    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+//        return ApiResponse.<UserResponse>builder()
+//                .result(userService.updateUser(userId, request))
+//                .build();
+//    }
     @DeleteMapping("/{userId}")
     String deleteUser(@PathVariable String userId){
         userService.deleteUser(userId);

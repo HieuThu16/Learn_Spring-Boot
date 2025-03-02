@@ -32,34 +32,34 @@ public class UserService {
    UserRepository userRepository;
    UserMapper userMapper;
    PasswordEncoder  passwordEncoder;
-    public User createUser(UserCreationRequest request){
+//    public User createUser(UserCreationRequest request){
+//
+//        if(userRepository.existsByUsername(request.getUsername()))
+//            throw new RuntimeException("ErrorCode.USER_EXISTED");
+//      //  User user = userMapper.toUser(request);
+////        User user = new User();
+////        user.setUsername(request.getUsername());
+////        user.setPassword(request.getPassword());
+////        user.setFirstName(request.getFirstName());
+////        user.setLastName(request.getLastName());
+////        user.setDob(request.getDob());
+//       // PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+//    //    user.setPassword(passwordEncoder.encode(user.getPassword()));
+//
+//        HashSet<String > roles = new  HashSet<>();
+//        roles .add(Role.USER.name());
+//    //    user.setRoles(roles);
+//      //  return userRepository.save(user);
+//    }
 
-        if(userRepository.existsByUsername(request.getUsername()))
-            throw new RuntimeException("ErrorCode.USER_EXISTED");
-        User user = userMapper.toUser(request);
-//        User user = new User();
-//        user.setUsername(request.getUsername());
-//        user.setPassword(request.getPassword());
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName());
-//        user.setDob(request.getDob());
-       // PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        HashSet<String > roles = new  HashSet<>();
-        roles .add(Role.USER.name());
-        user.setRoles(roles);
-        return userRepository.save(user);
-    }
-
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        userMapper.updateUser(user, request);
-
-
-        return userMapper.toUserResponse(userRepository.save(user));
-    }
+//    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+//
+////        userMapper.updateUser(user, request);
+////
+////
+////        return userMapper.toUserResponse(userRepository.save(user));
+//    }
 
 
     public void deleteUser(String userId){

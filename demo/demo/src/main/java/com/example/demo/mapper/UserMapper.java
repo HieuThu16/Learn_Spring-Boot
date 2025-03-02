@@ -3,18 +3,28 @@ package com.example.demo.mapper;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.UserResponse;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Mapper
 public interface UserMapper {
-    User toUser(UserCreationRequest request);
 
-   // @Mapping(source = "firstName" , target = "lastName")
-  //  @Mapping(target = "lastName", ignore = true)
-    UserResponse toUserResponse(User user);
+    @Mapping(target = "roles", source = "roles") // Có thể không cần nếu tên giống nhau
+    User toDto(User user);
 
-    void updateUser(@MappingTarget User user, UserUpdateRequest request);
+    // Chuyển cả tập hợp Set<Role> sang Set<String>
+    default Set<String> mapRoles(Set<Role> roles) {
+        if (roles == null) {
+            return null;
+        }
+        return roles.stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+    }
 }

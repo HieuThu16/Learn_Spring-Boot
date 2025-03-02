@@ -103,7 +103,7 @@ public class AuthenticationService {
         StringJoiner stringJoiner = new StringJoiner(" "); // Dùng khoảng trắng làm delimiter
 
         if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(stringJoiner::add);
+           // user.getRoles().forEach(stringJoiner::add);
         }
 
         return stringJoiner.toString();
